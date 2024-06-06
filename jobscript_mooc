@@ -1,0 +1,24 @@
+#!/bin/bash --login
+#$ -cwd
+#$ -l nvidia_v100            # Can instead use 'nvidia_a100' for the A100 GPUs (if permitted!)
+
+module load libs/cuda/11.7.0
+
+# Copy a directory of files from scratch to the GPU node's local NVMe storage
+cp -r ~/scratch/tgn/ $TMPDIR
+
+# Process the data with a GPU app, from within the local NVMe storage area
+cd $TMPDIR/ptgn/
+python train_self_supervised.py -d mooc --use_memory --n_runs 10 --prefix tgn-attn-mooc
+python train_supervised.py -d mooc --use_memory --prefix tgn-attn-mooc --n_runs 10
+
+# Copy the results back to the main scratch area
+rsync -av $TMPDIR/tgn/log/ ~/scratch/tgn/log/
+rsync -av $TMPDIR/tgn/results/ ~/scratch/tgn/results/
+rsync -av $TMPDIR/tgn/saved_checkpoints/ ~/scratch/tgn/saved_checkpoints/
+rsync -av $TMPDIR/tgn/saved_models/ ~/scratch/tgn/saved_models/
+
+# The batch system will automatically delete the contents of $TMPDIR at the end of your job.
+
+#$ -m ea
+#$ -M jiafeng.xiong@manchester.ac.uk     # Send email when finished.
