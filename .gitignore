@@ -3,7 +3,6 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm,python
 
 # Custom
-log/
 results/
 saved_checkpoints/
 saved_models/
@@ -165,7 +164,6 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
