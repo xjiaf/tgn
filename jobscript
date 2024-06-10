@@ -3,23 +3,48 @@
 #$ -l nvidia_v100            # Can instead use 'nvidia_a100' for the A100 GPUs (if permitted!)
 run_command() {
     local data=$1
+    local model=$2
 
     # Use command based on dataset
     if [[ $data == "wikipedia" ]]; then
-        python train_self_supervised.py --use_memory --n_runs 10 --prefix tgn-attn
-        python train_supervised.py --use_memory --prefix tgn-attn --n_runs 10
+        if [[ $model == "tgn" || $model == ""]]; then
+            python train_self_supervised.py --use_memory --n_runs 10 --prefix tgn-attn
+            python train_supervised.py --use_memory --prefix tgn-attn --n_runs 10
+        elif [[ $model == "jodie" ]]; then
+            python train_self_supervised.py --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn --n_runs 10
+            python train_supervised.py --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn --n_runs 10
+        fi
     elif [[ $data == "mooc" ]]; then
         python train_self_supervised.py -d mooc --use_memory --n_runs 10 --prefix tgn-attn-mooc
         python train_supervised.py -d mooc --use_memory --prefix tgn-attn-mooc --n_runs 10
     elif [[ $data == "wikipedia_fm" ]]; then
-        python utils/preprocess_data.py --data wikipedia --bipartite -fm
-        python train_self_supervised.py -d wikipedia_fm --use_memory --n_runs 10 --prefix tgn-attn-wiki_fm
-        python train_supervised.py -d wikipedia_fm --use_memory --prefix tgn-attn-wiki_fm --n_runs 10
+        if [[ $model == "tgn" || $model == ""]]; then
+            python utils/preprocess_data.py --data wikipedia --bipartite -fm
+            python train_self_supervised.py -d wikipedia_fm --use_memory --n_runs 10 --prefix tgn-attn-wiki_fm
+            python train_supervised.py -d wikipedia_fm --use_memory --prefix tgn-attn-wiki_fm --n_runs 10
+        elif [[ $model == "jodie" ]]; then
+            python utils/preprocess_data.py --data wikipedia --bipartite -fm
+            python train_self_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-wiki_fm --n_runs 10
+            python train_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-wiki_fm --n_runs 10
+        elif [[ $model == "dyrep" ]]; then
+            python utils/preprocess_data.py --data wikipedia --bipartite -fm
+            python train_self_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn-wiki_fm --n_runs 10
+            python train_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn-wiki_fm --n_runs 10
+        fi
     elif [[ $data == "reddit_fm" ]]; then
-        python utils/preprocess_data.py --data reddit --bipartite -fm
-        python train_self_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm --n_runs 10
-        python train_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm --n_runs 10
-
+        if [[ $model == "tgn" || $model == ""]]; then
+            python utils/preprocess_data.py --data reddit --bipartite -fm
+            python train_self_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm --n_runs 10
+            python train_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm --n_runs 10
+        elif [[ $model == "jodie" ]]; then
+            python utils/preprocess_data.py --data reddit --bipartite -fm
+            python train_self_supervised.py -d reddit_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-reddit_fm --n_runs 10
+            python train_supervised.py -d reddit_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-reddit_fm --n_runs 10
+        elif [[ $model == "dyrep" ]]; then
+            python utils/preprocess_data.py --data reddit --bipartite -fm
+            python train_self_supervised.py -d reddit_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn_reddit_fm --n_runs 10
+            python train_supervised.py -d reddit_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn_reddit_fm --n_runs 10
+        fi
     fi
 }
 
@@ -30,7 +55,7 @@ cp -r ~/scratch/tgn/ $TMPDIR
 
 # Process the data with a GPU app, from within the local NVMe storage area
 cd $TMPDIR/tgn/
-run_command $1
+run_command $1 $2
 
 # Copy the results back to the main scratch area
 rsync -av $TMPDIR/tgn/log/ ~/scratch/tgn/log/
@@ -39,12 +64,12 @@ rsync -av $TMPDIR/tgn/saved_checkpoints/ ~/scratch/tgn/saved_checkpoints/
 rsync -av $TMPDIR/tgn/saved_models/ ~/scratch/tgn/saved_models/
 
 # The batch system will automatically delete the contents of $TMPDIR at the end of your job.
-cd ~/scratch/tgn/
-git pull
-git add ./log/
-git commit -m "logs updated"
-git push
+# cd ~/scratch/tgn/
+# git pull
+# git add ./log/
+# git commit -m "logs updated"
+# git push
 
-sleep 3
+# sleep 3
 #$ -m ea
 #$ -M jiafeng.xiong@manchester.ac.uk     # Send email when finished.
