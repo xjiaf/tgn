@@ -16,8 +16,10 @@ run_command() {
         python train_self_supervised.py -d wikipedia_fm --use_memory --n_runs 10 --prefix tgn-attn-wiki_fm
         python train_supervised.py -d wikipedia_fm --use_memory --prefix tgn-attn-wiki_fm --n_runs 10
     elif [[ $data == "reddit_fm" ]]; then
-        # Update this line with correct script and parameters
-        echo "Command for reddit_fm is commented out."
+        python utils/preprocess_data.py --data reddit --bipartite -fm
+        python train_self_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm --n_runs 10
+        python train_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm --n_runs 10
+
     fi
 }
 
