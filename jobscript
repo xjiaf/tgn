@@ -8,42 +8,42 @@ run_command() {
     # Use command based on dataset
     if [[ $data == "wikipedia" ]]; then
         if [[ $model == "tgn" || $model == "" ]]; then
-            python train_self_supervised.py --use_memory --n_runs 10 --prefix tgn-attn --randomize_features
+            python train_self_supervised.py --use_memory --n_runs 10 --prefix tgn-attn-rd --randomize_features
             # python train_supervised.py --use_memory --prefix tgn-attn --n_runs 10
         elif [[ $model == "jodie" ]]; then
             python train_self_supervised.py --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn --n_runs 10
             python train_supervised.py --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn --n_runs 10
         fi
-    elif [[ $data == "mooc" ]]; then
-        python train_self_supervised.py -d mooc --use_memory --n_runs 10 --prefix tgn-attn-mooc
-        python train_supervised.py -d mooc --use_memory --prefix tgn-attn-mooc --n_runs 10
+    elif [[ $data == "reddit" ]]; then
+        python train_self_supervised.py -d reddit --use_memory --n_runs 10 --prefix tgn-attn-reddit-rd --randomize_features
+        # python train_supervised.py -d reddit --use_memory --prefix tgn-attn-reddit --n_runs 10
     elif [[ $data == "wikipedia_fm" ]]; then
         if [[ $model == "tgn" || $model == "" ]]; then
-            python utils/preprocess_data.py --data wikipedia --bipartite -fm
-            python train_self_supervised.py -d wikipedia_fm --use_memory --n_runs 10 --prefix tgn-attn-wiki_fm --randomize_features
+            # python utils/preprocess_data.py --data wikipedia --bipartite -fm
+            python train_self_supervised.py -d wikipedia_fm --use_memory --n_runs 10 --prefix tgn-attn-wiki_fm-rd --randomize_features
             # python train_supervised.py -d wikipedia_fm --use_memory --prefix tgn-attn-wiki_fm --n_runs 10
         elif [[ $model == "jodie" ]]; then
-            python utils/preprocess_data.py --data wikipedia --bipartite -fm
+            # python utils/preprocess_data.py --data wikipedia --bipartite -fm
             python train_self_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-wiki_fm --n_runs 10
-            python train_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-wiki_fm --n_runs 10
+            # python train_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-wiki_fm --n_runs 10
         elif [[ $model == "dyrep" ]]; then
-            python utils/preprocess_data.py --data wikipedia --bipartite -fm
+            # python utils/preprocess_data.py --data wikipedia --bipartite -fm
             python train_self_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn-wiki_fm --n_runs 10
-            python train_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn-wiki_fm --n_runs 10
+            # python train_supervised.py -d wikipedia_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn-wiki_fm --n_runs 10
         fi
     elif [[ $data == "reddit_fm" ]]; then
         if [[ $model == "tgn" || $model == "" ]]; then
-            python utils/preprocess_data.py --data reddit --bipartite -fm
-            python train_self_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm --n_runs 10 --randomize_features
+            # python utils/preprocess_data.py --data reddit --bipartite -fm
+            python train_self_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm-rd --n_runs 10 --randomize_features
             # python train_supervised.py -d reddit_fm --use_memory --prefix tgn-attn-reddit_fm --n_runs 10
         elif [[ $model == "jodie" ]]; then
-            python utils/preprocess_data.py --data reddit --bipartite -fm
+            # python utils/preprocess_data.py --data reddit --bipartite -fm
             python train_self_supervised.py -d reddit_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-reddit_fm --n_runs 10
-            python train_supervised.py -d reddit_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-reddit_fm --n_runs 10
+            # python train_supervised.py -d reddit_fm --use_memory --memory_updater rnn --embedding_module time --prefix jodie_rnn-reddit_fm --n_runs 10
         elif [[ $model == "dyrep" ]]; then
-            python utils/preprocess_data.py --data reddit --bipartite -fm
+            # python utils/preprocess_data.py --data reddit --bipartite -fm
             python train_self_supervised.py -d reddit_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn_reddit_fm --n_runs 10
-            python train_supervised.py -d reddit_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn_reddit_fm --n_runs 10
+            # python train_supervised.py -d reddit_fm --use_memory --memory_updater rnn --dyrep --use_destination_embedding_in_message --prefix dyrep_rnn_reddit_fm --n_runs 10
         fi
     fi
 }
