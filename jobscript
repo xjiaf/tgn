@@ -16,7 +16,8 @@ run_command() {
         fi
     elif [[ $data == "reddit" ]]; then
         # python train_self_supervised.py -d reddit --use_memory --n_runs 10 --prefix tgn-attn-reddit-rd --randomize_features
-        python train_supervised.py -d reddit --use_memory --prefix tgn-attn-reddit --n_runs 10
+        python train_self_supervised.py -d reddit --use_memory --n_runs 10 --prefix tgn-attn-reddit
+        # python train_supervised.py -d reddit --use_memory --prefix tgn-attn-reddit --n_runs 10
     elif [[ $data == "lastfm" ]]; then
         python train_self_supervised.py -d lastfm --use_memory --n_runs 10 --prefix tgn-attn-lastfm-rd --randomize_features
         # python train_supervised.py -d lastfm --use_memory --prefix tgn-attn-lastfm --n_runs 10
