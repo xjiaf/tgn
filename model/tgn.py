@@ -54,7 +54,8 @@ class TGN(torch.nn.Module):
     self.std_time_shift_dst = std_time_shift_dst
 
     if self.use_memory:
-      self.memory_dimension = memory_dimension
+      # self.memory_dimension = memory_dimension
+      self.memory_dimension = self.n_node_features
       self.memory_update_at_start = memory_update_at_start
       raw_message_dimension = 2 * self.memory_dimension + self.n_edge_features + \
                               self.time_encoder.dimension
