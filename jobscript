@@ -15,11 +15,11 @@ run_command() {
         data="wikipedia"
     elif [[ $data == "reddit" ]]; then
         data="reddit"
+    elif [[ $data == "social" ]]; then
+        data="socialevolve_2weeks"
     elif [[ $data == "wiki_fm" || $data == "wikipedia_fm" ]]; then
-        python utils/preprocess_data.py --data wikipedia --bipartite -fm
         data="wikipedia_fm"
     elif [[ $data == "reddit_fm" ]]; then
-        python utils/preprocess_data.py --data reddit --bipartite -fm
         data="reddit_fm"
     fi
 
